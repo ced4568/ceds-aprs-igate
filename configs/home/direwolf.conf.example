@@ -4,6 +4,6 @@ MYCALL KJ5JCO-10
 MODEM 1200
 IGSERVER noam.aprs2.net
 IGLOGIN KJ5JCO YOURPASSCODE
-PBEACON lat=34.3110 long=-89.9443 symbol="I&" comment="Ced Home iGate"
+PBEACON lat=34.3110 long=-89.9443 symbol="I&" comment="Ceds Home iGate"
 AGWPORT 8000
 KISSPORT 8001
