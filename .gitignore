@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.log
+logs/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.local
+.env
+*.secret
+passcode.txt
+screenshots/tmp/
+*.nmea

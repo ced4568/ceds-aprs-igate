@@ -1,0 +1,15 @@
+[Unit]
+Description=Direwolf APRS iGate
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ced4568
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/bin/direwolf -c /home/ced4568/direwolf.conf
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
