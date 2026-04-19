@@ -1,6 +1,6 @@
 # 📡 Ceds APRS iGate (Dual Node System)
 
-> Raspberry Pi-based APRS iGate system with network failover, GPS integration, and HomeLab infrastructure connectivity
+> Dual-node APRS iGate system with network failover, GPS integration, and HomeLab infrastructure connectivity
 
 ![Status](https://img.shields.io/badge/status-in%20progress-blue)
 ![Platform](https://img.shields.io/badge/platform-Raspberry%20Pi-red)
@@ -23,6 +23,17 @@ The system bridges:
 **Radio → Raspberry Pi → Direwolf → Internet → APRS-IS → aprs.fi**
 
 ---
+## 🎯 Purpose
+
+This project was built to:
+
+- Learn and implement real-world APRS infrastructure
+- Design a resilient system with network failover
+- Integrate RF systems into a modern IP-based environment
+- Build a documented, reproducible system inside a HomeLab
+
+It focuses on **practical engineering**, not just theory.
+---
 
 ## 🏗️ Architecture
 
@@ -43,6 +54,8 @@ The system bridges:
 ---
 
 ## 📊 System Diagram
+
+Below is a high-level view of how the system components interact:
 
 ```mermaid
 flowchart LR
@@ -155,7 +168,7 @@ This project demonstrates:
 - Network failover design
 - Linux service management
 
-This is not just a radio project — it is a **distributed system inside a home infrastructure environment**
+This is not just a radio project — it is a **distributed system integrating RF, Linux, and network infrastructure**
 
 ---
 
@@ -239,3 +252,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable direwolf
 sudo systemctl start direwolf
 ```
+## 📚 What I Learned
+
+- How to deploy and manage Linux services using systemd
+- Network prioritization and failover using nmcli
+- Integrating hardware (radio/audio/GPS) with software systems
+- Designing systems for reliability and uptime
+- Documenting technical builds for reproducibility
