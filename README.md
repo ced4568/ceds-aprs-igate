@@ -52,3 +52,8 @@ ceds-aprs-igate/
 ├── parts/
 ├── screenshots/
 └── notes/
+
+## Quick Start
+
+See full setup guide:
+👉 docs/setup.md
