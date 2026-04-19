@@ -1,4 +1,4 @@
-# 📡 Ced APRS iGate
+# 📡 Ceds APRS iGate
 
 A dual APRS iGate build using Raspberry Pi, Direwolf, APRS-IS, QRZ-1 radios, USB sound cards, and GPS.
 
