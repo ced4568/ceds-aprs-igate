@@ -1,7 +1,7 @@
 # Bill of Materials
 
 ## Home iGate
-- Raspberry Pi
+- Raspberry Pi 2W, 3B+ or Newer
 - QRZ-1 Explorer radio
 - Sabrent USB sound card
 - 3.5 mm audio cable
