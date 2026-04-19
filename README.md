@@ -19,7 +19,7 @@ A dual APRS iGate build using Raspberry Pi, Direwolf, APRS-IS, QRZ-1 radios, USB
 
 ## Hardware
 
-- Raspberry Pi for home iGate
+- Raspberry Pi 3B+ or newer for home iGate
 - Raspberry Pi Zero 2 W for mobile iGate
 - QRZ-1 Explorer radios
 - Sabrent USB sound cards
