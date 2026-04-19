@@ -25,8 +25,9 @@ APRS-IS login should use the base callsign in IGLOGIN, not the SSID
 Example:
 
 IGLOGIN KJ5JCO YOURPASSCODE
+
 Home and mobile stations must use different MYCALL SSIDs
-Do not upload your real APRS passcode to GitHub
+
 
 🛣️ Roadmap
  Finish home audio wiring
