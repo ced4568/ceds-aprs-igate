@@ -13,43 +13,49 @@
 
 This project builds a **dual-node APRS iGate system** designed for:
 
-- 📡 Reliable APRS packet decoding and forwarding
-- 🌐 Continuous internet connectivity (failover enabled)
-- 🚗 Mobile + 🏠 Home deployment
-- 🧠 Integration into Ced’s HomeLab infrastructure
+* 📡 Reliable APRS packet decoding and forwarding
+* 🌐 Continuous internet connectivity (failover enabled)
+* 🚗 Mobile + 🏠 Home deployment
+* 🧠 Integration into Ced’s HomeLab infrastructure
 
 The system bridges:
 
 **Radio → Raspberry Pi → Direwolf → Internet → APRS-IS → aprs.fi**
 
 ---
+
 ## 🎯 Purpose
 
 This project was built to:
 
-- Learn and implement real-world APRS infrastructure
-- Design a resilient system with network failover
-- Integrate RF systems into a modern IP-based environment
-- Build a documented, reproducible system inside a HomeLab
+* Learn and implement real-world APRS infrastructure
+* Design a resilient system with network failover
+* Integrate RF systems into a modern IP-based environment
+* Build a documented, reproducible system inside a HomeLab
 
 It focuses on **practical engineering**, not just theory.
+
 ---
 
 ## 🏗️ Architecture
 
 ### 🔹 Home iGate
-- Runs on Raspberry Pi (HomeLab VLAN)
-- Always-on station
-- Stable APRS-IS uplink
-- Connected to fixed antenna + audio interface
+
+* Runs on Raspberry Pi (HomeLab VLAN)
+* Always-on station
+* Stable APRS-IS uplink
+* Connected to fixed antenna + audio interface
 
 ### 🔹 Mobile iGate
-- Raspberry Pi Zero 2 W
-- Connects to:
-  - 🏠 HomeLab WiFi (primary)
-  - 📱 iPhone hotspot (fallback)
-- GPS-enabled for live tracking
-- Designed for portability and redundancy
+
+* Raspberry Pi Zero 2 W
+* Connects to:
+
+  * 🏠 HomeLab WiFi (primary)
+  * 📱 iPhone hotspot (fallback)
+* GPS-enabled for live tracking
+* Designed for portability and redundancy
+* Uses **ETH-USB-HUB-BOX for power, USB expansion, and wired networking capability**
 
 ---
 
@@ -104,11 +110,11 @@ flowchart LR
 
 ## 🔁 System Flow
 
-1. Radio receives APRS packet  
-2. Audio is passed into Raspberry Pi via USB sound card  
-3. Direwolf decodes packet  
-4. Packet is forwarded to APRS-IS via internet  
-5. Data appears on aprs.fi  
+1. Radio receives APRS packet
+2. Audio is passed into Raspberry Pi via USB sound card
+3. Direwolf decodes packet
+4. Packet is forwarded to APRS-IS via internet
+5. Data appears on aprs.fi
 
 ---
 
@@ -116,8 +122,8 @@ flowchart LR
 
 This system automatically prioritizes connections:
 
-1. **Primary:** HomeLab WiFi  
-2. **Fallback:** Mobile hotspot  
+1. **Primary:** HomeLab WiFi
+2. **Fallback:** Mobile hotspot
 
 Configured using:
 
@@ -127,19 +133,20 @@ nmcli connection modify <hotspot> connection.autoconnect-priority 5
 ```
 
 This ensures:
-- Continuous APRS-IS connectivity
-- Automatic recovery during network loss
+
+* Continuous APRS-IS connectivity
+* Automatic recovery during network loss
 
 ---
 
 ## ⚙️ Features
 
-- Direwolf APRS decoding
-- APRS-IS upload
-- Network failover (WiFi ↔ hotspot)
-- Systemd auto-start on boot
-- GPS integration for mobile tracking
-- GitHub-documented configs and setup
+* Direwolf APRS decoding
+* APRS-IS upload
+* Network failover (WiFi ↔ hotspot)
+* Systemd auto-start on boot
+* GPS integration for mobile tracking
+* GitHub-documented configs and setup
 
 ---
 
@@ -149,24 +156,24 @@ This iGate is part of a larger system: **Ced’s HomeLab**
 
 ### 🔗 Role in the Lab
 
-- Acts as an **edge data ingestion node**
-- Bridges RF (radio) into IP-based systems
-- Runs on isolated HomeLab VLAN
+* Acts as an **edge data ingestion node**
+* Bridges RF (radio) into IP-based systems
+* Runs on isolated HomeLab VLAN
 
 ### 🌐 Network Placement
 
-- Connected to HomeLab WiFi (primary)
-- Uses hotspot fallback for redundancy
-- Designed for continuous uptime
+* Connected to HomeLab WiFi (primary)
+* Uses hotspot fallback for redundancy
+* Designed for continuous uptime
 
 ### 🧩 Why This Matters
 
 This project demonstrates:
 
-- Real-world **edge computing**
-- Hardware + software integration
-- Network failover design
-- Linux service management
+* Real-world **edge computing**
+* Hardware + software integration
+* Network failover design
+* Linux service management
 
 This is not just a radio project — it is a **distributed system integrating RF, Linux, and network infrastructure**
 
@@ -174,20 +181,30 @@ This is not just a radio project — it is a **distributed system integrating RF
 
 ## 🧰 Hardware
 
-- Raspberry Pi 3B+ (Home iGate)
-- Raspberry Pi Zero 2 W (Mobile iGate)
-- QRZ-1 Explorer radios
-- USB sound cards
-- Audio interface cables
-- USB GPS receiver
+### 🏠 Home Setup
+
+* Raspberry Pi 3B+ (Home iGate)
+* QRZ-1 Explorer radio
+* USB sound card
+* Audio interface cables
+* Inline volume control (for proper audio attenuation)
+
+### 🚗 Mobile Setup
+
+* Raspberry Pi Zero 2 W
+* ETH-USB-HUB-BOX (power + USB + Ethernet expansion)
+* USB sound card
+* Audio interface cables
+* Portable radio
+* USB GPS receiver
 
 ---
 
 ## 🆔 APRS Identities
 
-- `KJ5JCO-7` → handheld radio  
-- `KJ5JCO-10` → home iGate  
-- `KJ5JCO-15` → mobile iGate  
+* `KJ5JCO-7` → handheld radio
+* `KJ5JCO-10` → home iGate
+* `KJ5JCO-15` → mobile iGate
 
 ---
 
@@ -209,20 +226,20 @@ ceds-aprs-igate/
 
 ## ⚠️ Security Notes
 
-- APRS passcode is NOT stored in this repo
-- Credentials are handled locally only
-- Prevents accidental exposure
+* APRS passcode is NOT stored in this repo
+* Credentials are handled locally only
+* Prevents accidental exposure
 
 ---
 
 ## 🧭 Roadmap
 
-- [ ] Finish home audio wiring
-- [ ] Finish mobile audio wiring
-- [ ] Add GPS module to mobile build
-- [ ] Capture aprs.fi screenshots
-- [ ] Add wiring diagrams
-- [ ] Field testing and validation
+* [ ] Finish home audio wiring
+* [ ] Finish mobile audio wiring
+* [ ] Add GPS module to mobile build
+* [ ] Capture aprs.fi screenshots
+* [ ] Add wiring diagrams
+* [ ] Field testing and validation
 
 ---
 
@@ -252,10 +269,13 @@ sudo systemctl daemon-reload
 sudo systemctl enable direwolf
 sudo systemctl start direwolf
 ```
+
+---
+
 ## 📚 What I Learned
 
-- How to deploy and manage Linux services using systemd
-- Network prioritization and failover using nmcli
-- Integrating hardware (radio/audio/GPS) with software systems
-- Designing systems for reliability and uptime
-- Documenting technical builds for reproducibility
+* How to deploy and manage Linux services using systemd
+* Network prioritization and failover using nmcli
+* Integrating hardware (radio/audio/GPS) with software systems
+* Designing systems for reliability and uptime
+* Documenting technical builds for reproducibility
