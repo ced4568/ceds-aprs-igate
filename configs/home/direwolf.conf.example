@@ -1,7 +1,7 @@
 # Ced's Home APRS iGate - Production Example
 # Station: KJ5JCO-10
 # Replace YOURPASSCODE before using locally.
-# Do NOT commit your real passcode.
+
 
 ADEVICE plughw:1,0
 ACHANNELS 1
