@@ -1,9 +1,27 @@
+# Ced's Home APRS iGate - Production Example
+# Station: KJ5JCO-10
+# Replace YOURPASSCODE before using locally.
+# Do NOT commit your real passcode.
+
 ADEVICE plughw:1,0
+ACHANNELS 1
+ARATE 44100
+GAIN 0.3
+AGC 0
+
 CHANNEL 0
 MYCALL KJ5JCO-10
+
 MODEM 1200
-IGSERVER noam.aprs2.net
-IGLOGIN KJ5JCO YOURPASSCODE
-PBEACON lat=34.3110 long=-89.9443 symbol="I&" comment="Ceds Home iGate"
+
 AGWPORT 8000
 KISSPORT 8001
+
+IGSERVER rotate.aprs2.net
+IGLOGIN KJ5JCO YOURPASSCODE
+
+# Optional APRS-IS filter. Adjust radius as needed.
+IGFILTER r/50
+
+# Home iGate uses fixed position and sends beacon to APRS-IS only.
+PBEACON sendto=IG delay=1 every=30 lat=34.3310 long=-89.5227 symbol=igate comment="Ced's Home iGate"

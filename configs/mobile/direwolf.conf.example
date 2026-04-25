@@ -1,10 +1,30 @@
+# Ced's Mobile APRS iGate - Production Example
+# Station: KJ5JCO-15
+# Replace YOURPASSCODE before using locally.
+# Do NOT commit your real passcode.
+
 ADEVICE plughw:1,0
+ACHANNELS 1
+ARATE 44100
+GAIN 0.3
+AGC 0
+
 CHANNEL 0
 MYCALL KJ5JCO-15
+
 MODEM 1200
-IGSERVER noam.aprs2.net
-IGLOGIN KJ5JCO YOURPASSCODE
-GPSD
-PBEACON sendto=IG delay=0:30 every=5:00 symbol=">" comment="Ced Mobile iGate"
+
 AGWPORT 8000
 KISSPORT 8001
+
+IGSERVER rotate.aprs2.net
+IGLOGIN KJ5JCO YOURPASSCODE
+
+# Optional APRS-IS filter. Adjust radius as needed.
+IGFILTER r/50
+
+# Mobile iGate uses GPSD for position.
+GPSD
+
+# GPS provides position; do not hardcode lat/long for mobile once GPS is working.
+PBEACON sendto=IG delay=1 every=5 symbol=igate comment="Ced's Mobile iGate"

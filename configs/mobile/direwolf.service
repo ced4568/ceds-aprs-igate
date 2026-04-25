@@ -1,5 +1,5 @@
 [Unit]
-Description=Direwolf APRS iGate
+Description=Ced's Mobile APRS iGate - Direwolf
 After=network-online.target
 Wants=network-online.target
 
