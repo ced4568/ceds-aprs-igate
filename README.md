@@ -189,6 +189,19 @@ This is not just a radio project — it is a **distributed system integrating RF
 * Audio interface cables
 * Inline volume control (for proper audio attenuation)
 
+### 🔊 Audio Chain (Critical)
+
+Radio → Inline Volume Controller → USB Sound Card → Raspberry Pi
+
+#### 🎯 Key Tuning Insight
+
+- Target audio level: **~50–60**
+- Too high → clipping / decode errors  
+- Too low → missed packets  
+- Tuned using real beacon testing + Direwolf output
+
+This was the most important step for achieving reliable packet decoding.
+
 ### 🚗 Mobile Setup
 
 * Raspberry Pi Zero 2 W
@@ -207,6 +220,39 @@ This is not just a radio project — it is a **distributed system integrating RF
 * `KJ5JCO-15` → mobile iGate
 
 ---
+
+## ⚙️ Software Stack
+
+* Direwolf APRS TNC
+* APRS-IS internet backbone
+* Raspberry Pi OS / Linux
+* systemd service management
+* nmcli for WiFi priority and failover
+
+---
+
+## 📄 Direwolf Configuration
+
+> Passcode is intentionally replaced with `<PASSCODE>` for security.
+
+```conf
+ADEVICE plughw:1,0
+ACHANNELS 1
+ARATE 44100
+
+CHANNEL 0
+MYCALL KJ5JCO-10
+
+MODEM 1200
+
+AGWPORT 8000
+KISSPORT 8001
+
+IGSERVER noam.aprs2.net
+IGLOGIN KJ5JCO-10 <PASSCODE>
+
+PBEACON sendto=IG delay=1 every=30 lat=34.3310 long=-89.5227 symbol=igate comment="Ced's Home iGate"
+```
 
 ## 📁 Repository Layout
 
@@ -234,12 +280,13 @@ ceds-aprs-igate/
 
 ## 🧭 Roadmap
 
-* [ ] Finish home audio wiring
+* [x] Finish home audio wiring
 * [ ] Finish mobile audio wiring
-* [ ] Add GPS module to mobile build
+* [x] Add GPS module to mobile build
 * [ ] Capture aprs.fi screenshots
 * [ ] Add wiring diagrams
-* [ ] Field testing and validation
+* [x] Field testing and validation for home iGate
+* [ ] Add NOC dashboard integration
 
 ---
 
@@ -279,3 +326,59 @@ sudo systemctl start direwolf
 * Integrating hardware (radio/audio/GPS) with software systems
 * Designing systems for reliability and uptime
 * Documenting technical builds for reproducibility
+
+---
+
+## 🧪 Troubleshooting Notes
+
+### Audio Level Too High
+
+Problem:
+
+```text
+Audio input level is too high
+```
+
+Fix:
+
+* Added inline volume control
+* Tuned Direwolf audio levels to roughly **50–60**
+* Verified using repeated FT5D beacon tests
+
+### Audio Device Busy
+
+Problem:
+
+```text
+Could not open audio device plughw:1,0
+Device or resource busy
+```
+
+Fix:
+
+```bash
+sudo systemctl stop direwolf
+sudo killall direwolf
+fuser -v /dev/snd/*
+```
+
+### APRS-IS Not Updating
+
+Problem:
+
+* Direwolf decoded packets
+* APRS.fi did not update consistently
+
+Fix:
+
+* Verified APRS-IS login
+* Corrected IGLOGIN to match iGate SSID:
+
+```conf
+MYCALL KJ5JCO-10
+IGLOGIN KJ5JCO-10 <PASSCODE>
+```
+
+### Missing Some Beacons
+
+This is normal APRS behavior. Packet collisions, RF conditions, squelch behavior, and local APRS traffic levels can affect whether every beacon is decoded.
