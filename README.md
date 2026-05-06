@@ -1,239 +1,155 @@
-# 📡 Ceds APRS iGate (Dual Node System)
+# Ced's APRS iGate — Dual-Node RF Edge System
 
-> Dual-node APRS iGate system with network failover, GPS integration, and HomeLab infrastructure connectivity
+> A dual-node APRS iGate system bridging amateur radio RF signals to the internet — running on Raspberry Pi hardware with automatic network failover, GPS tracking, and integration into Ced's HomeLab infrastructure.
 
-![Status](https://img.shields.io/badge/status-in%20progress-blue)
-![Platform](https://img.shields.io/badge/platform-Raspberry%20Pi-red)
-![OS](https://img.shields.io/badge/os-Linux-black)
-![Network](https://img.shields.io/badge/network-APRS--IS-green)
-
----
-
-## 🚀 Overview
-
-This project builds a **dual-node APRS iGate system** designed for:
-
-* 📡 Reliable APRS packet decoding and forwarding
-* 🌐 Continuous internet connectivity (failover enabled)
-* 🚗 Mobile + 🏠 Home deployment
-* 🧠 Integration into Ced’s HomeLab infrastructure
-
-The system bridges:
-
-**Radio → Raspberry Pi → Direwolf → Internet → APRS-IS → aprs.fi**
+[![License](https://img.shields.io/badge/Callsign-KJ5JCO-1D9E75?style=flat-square)](#aprs-identities)
+[![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi-C51A4A?style=flat-square)](#hardware)
+[![OS](https://img.shields.io/badge/OS-Debian%20Linux-A80030?style=flat-square)](#software-stack)
+[![Live](https://img.shields.io/badge/Live-aprs.fi%2FKJ5JCO-085041?style=flat-square)](https://aprs.fi/#!call=KJ5JCO)
+[![NOC](https://img.shields.io/badge/NOC-noc.chasedumphord.com-0F6E56?style=flat-square)](https://noc.chasedumphord.com)
 
 ---
 
-## 🎯 Purpose
+## Why I Built This
 
-This project was built to:
+Most people think of a homelab as servers, VMs, and containers. This project is what happens when you take that same systems-thinking mindset and apply it to RF and radio infrastructure.
 
-* Learn and implement real-world APRS infrastructure
-* Design a resilient system with network failover
-* Integrate RF systems into a modern IP-based environment
-* Build a documented, reproducible system inside a HomeLab
+As a licensed amateur radio operator (KJ5JCO), I wanted to build something that bridged the physical and digital worlds — an edge data ingestion system that takes real radio signals off the air, decodes them, and injects them into an IP-based network. That's not just a radio project. That's distributed systems thinking applied to RF.
 
-It focuses on **practical engineering**, not just theory.
+The home iGate runs 24/7 on the HomeLab VLAN. The mobile iGate runs on a Pi Zero 2W with automatic failover between HomeLab WiFi and an iPhone hotspot. Both nodes uplink decoded APRS packets to the global APRS-IS network, where they appear live on aprs.fi.
 
----
-
-## 🏗️ Architecture
-
-### 🔹 Home iGate
-
-* Runs on Raspberry Pi (HomeLab VLAN)
-* Always-on station
-* Stable APRS-IS uplink
-* Connected to fixed antenna + audio interface
-
-### 🔹 Mobile iGate
-
-* Raspberry Pi Zero 2 W
-* Connects to:
-
-  * 🏠 HomeLab WiFi (primary)
-  * 📱 iPhone hotspot (fallback)
-* GPS-enabled for live tracking
-* Designed for portability and redundancy
-* Uses **ETH-USB-HUB-BOX for power, USB expansion, and wired networking capability**
+The most technically interesting part wasn't the software — it was tuning the audio chain. Getting reliable packet decodes required hitting a specific audio level window (50–60) and adding an inline volume controller between the radio and the USB sound card. Too high and you get clipping. Too low and you miss packets. That kind of hardware-software integration is what makes this project more than a tutorial follow-along.
 
 ---
 
-## 📊 System Diagram
-
-Below is a high-level view of how the system components interact:
+## System Architecture
 
 ```mermaid
 flowchart LR
 
-    subgraph RF Layer
+    subgraph RF["RF Layer"]
         HT[Radio Signal]
         ANT[Antenna]
     end
 
-    subgraph Interface
-        AUDIO[Audio Cable]
+    subgraph Interface["Audio Interface"]
+        VOL[Inline Volume Control]
         USB[USB Sound Card]
     end
 
-    subgraph Processing
-        PI[Raspberry Pi]
-        DW[Direwolf Decoder]
+    subgraph Processing["Processing — Raspberry Pi"]
+        DW[Direwolf TNC]
         GPS[GPS Module]
     end
 
-    subgraph Network
-        WIFI[HomeLab WiFi]
-        HOTSPOT[iPhone Hotspot]
+    subgraph Network["Network — Failover"]
+        WIFI[HomeLab WiFi<br/>Primary]
+        HOTSPOT[iPhone Hotspot<br/>Fallback]
         NET[Internet]
     end
 
-    subgraph APRS
-        IS[APRS-IS Network]
+    subgraph APRS["APRS Network"]
+        IS[APRS-IS]
         MAP[aprs.fi]
     end
 
-    HT --> ANT --> AUDIO --> USB --> PI
-    PI --> DW
-    GPS --> PI
-
-    DW --> WIFI
-    DW --> HOTSPOT
-
+    HT --> ANT --> VOL --> USB --> DW
+    GPS --> DW
+    DW --> WIFI & HOTSPOT
     WIFI --> NET
     HOTSPOT --> NET
-
     NET --> IS --> MAP
 ```
 
 ---
 
-## 🔁 System Flow
+## Dual-Node Setup
 
-1. Radio receives APRS packet
-2. Audio is passed into Raspberry Pi via USB sound card
-3. Direwolf decodes packet
-4. Packet is forwarded to APRS-IS via internet
-5. Data appears on aprs.fi
+### Home iGate — KJ5JCO-10
+
+Always-on station running on the HomeLab VLAN. Fixed antenna, stable APRS-IS uplink, systemd-managed for automatic restart on boot.
+
+| Component | Detail |
+|-----------|--------|
+| Hardware | Raspberry Pi 3B+ |
+| Radio | QRZ-1 Explorer |
+| Interface | USB sound card + inline volume control |
+| Network | HomeLab WiFi (primary) / hotspot (fallback) |
+| SSID | KJ5JCO-10 |
+| Status | Live — verified on aprs.fi |
+
+### Mobile iGate — KJ5JCO-15
+
+Portable build designed for field deployment. GPS-enabled for live position tracking. ETH-USB-HUB-BOX provides power, USB expansion, and wired networking in a compact form factor.
+
+| Component | Detail |
+|-----------|--------|
+| Hardware | Raspberry Pi Zero 2W |
+| Expansion | ETH-USB-HUB-BOX |
+| Interface | USB sound card + audio cables |
+| Network | HomeLab WiFi (primary) / iPhone hotspot (fallback) |
+| GPS | USB GPS receiver |
+| SSID | KJ5JCO-15 |
+| Status | In progress — mobile audio wiring pending |
 
 ---
 
-## 🌐 Network Failover Logic
+## APRS Identities
 
-This system automatically prioritizes connections:
+| Callsign | Role |
+|----------|------|
+| KJ5JCO-7 | Handheld radio |
+| KJ5JCO-10 | Home iGate |
+| KJ5JCO-15 | Mobile iGate |
 
-1. **Primary:** HomeLab WiFi
-2. **Fallback:** Mobile hotspot
+---
 
-Configured using:
+## Audio Chain — The Critical Detail
 
-```bash
-nmcli connection modify <wifi> connection.autoconnect-priority 10
-nmcli connection modify <hotspot> connection.autoconnect-priority 5
+Getting reliable packet decodes required precise audio chain tuning. This was the hardest part of the build.
+
+```
+Radio → Inline Volume Controller → USB Sound Card → Raspberry Pi → Direwolf
 ```
 
-This ensures:
+**Target audio level: 50–60**
 
-* Continuous APRS-IS connectivity
-* Automatic recovery during network loss
+- Too high → clipping and decode errors
+- Too low → missed packets
+- Tuned using live beacon testing with real FT5D transmissions and Direwolf output monitoring
 
----
-
-## ⚙️ Features
-
-* Direwolf APRS decoding
-* APRS-IS upload
-* Network failover (WiFi ↔ hotspot)
-* Systemd auto-start on boot
-* GPS integration for mobile tracking
-* GitHub-documented configs and setup
+The inline volume controller between the radio and USB sound card is not optional — it's what makes reliable decoding possible.
 
 ---
 
-## 🧠 Ced’s HomeLab Integration
+## Network Failover
 
-This iGate is part of a larger system: **Ced’s HomeLab**
+The system automatically prioritizes connections using `nmcli` connection priorities:
 
-### 🔗 Role in the Lab
+```bash
+nmcli connection modify <homelab-wifi> connection.autoconnect-priority 10
+nmcli connection modify <iphone-hotspot> connection.autoconnect-priority 5
+```
 
-* Acts as an **edge data ingestion node**
-* Bridges RF (radio) into IP-based systems
-* Runs on isolated HomeLab VLAN
-
-### 🌐 Network Placement
-
-* Connected to HomeLab WiFi (primary)
-* Uses hotspot fallback for redundancy
-* Designed for continuous uptime
-
-### 🧩 Why This Matters
-
-This project demonstrates:
-
-* Real-world **edge computing**
-* Hardware + software integration
-* Network failover design
-* Linux service management
-
-This is not just a radio project — it is a **distributed system integrating RF, Linux, and network infrastructure**
+When HomeLab WiFi drops, the system fails over to the iPhone hotspot automatically — maintaining continuous APRS-IS uplink without manual intervention.
 
 ---
 
-## 🧰 Hardware
+## Software Stack
 
-### 🏠 Home Setup
-
-* Raspberry Pi 3B+ (Home iGate)
-* QRZ-1 Explorer radio
-* USB sound card
-* Audio interface cables
-* Inline volume control (for proper audio attenuation)
-
-### 🔊 Audio Chain (Critical)
-
-Radio → Inline Volume Controller → USB Sound Card → Raspberry Pi
-
-#### 🎯 Key Tuning Insight
-
-- Target audio level: **~50–60**
-- Too high → clipping / decode errors  
-- Too low → missed packets  
-- Tuned using real beacon testing + Direwolf output
-
-This was the most important step for achieving reliable packet decoding.
-
-### 🚗 Mobile Setup
-
-* Raspberry Pi Zero 2 W
-* ETH-USB-HUB-BOX (power + USB + Ethernet expansion)
-* USB sound card
-* Audio interface cables
-* Portable radio
-* USB GPS receiver
+| Software | Role |
+|----------|------|
+| Direwolf | APRS TNC — packet decoding and APRS-IS uplink |
+| APRS-IS | Global APRS internet backbone |
+| gpsd | GPS daemon for mobile position tracking |
+| nmcli | Network priority and failover management |
+| systemd | Service management — auto-start on boot |
 
 ---
 
-## 🆔 APRS Identities
+## Direwolf Configuration
 
-* `KJ5JCO-7` → handheld radio
-* `KJ5JCO-10` → home iGate
-* `KJ5JCO-15` → mobile iGate
-
----
-
-## ⚙️ Software Stack
-
-* Direwolf APRS TNC
-* APRS-IS internet backbone
-* Raspberry Pi OS / Linux
-* systemd service management
-* nmcli for WiFi priority and failover
-
----
-
-## 📄 Direwolf Configuration
-
-> Passcode is intentionally replaced with `<PASSCODE>` for security.
+> APRS passcode is replaced with `<PASSCODE>` — never stored in this repo.
 
 ```conf
 ADEVICE plughw:1,0
@@ -254,53 +170,18 @@ IGLOGIN KJ5JCO-10 <PASSCODE>
 PBEACON sendto=IG delay=1 every=30 lat=34.3310 long=-89.5227 symbol=igate comment="Ced's Home iGate"
 ```
 
-## 📁 Repository Layout
-
-```text
-ceds-aprs-igate/
-├── README.md
-├── diagrams/
-├── docs/
-├── configs/
-├── scripts/
-├── parts/
-├── screenshots/
-└── notes/
-```
-
 ---
 
-## ⚠️ Security Notes
+## Quick Start
 
-* APRS passcode is NOT stored in this repo
-* Credentials are handled locally only
-* Prevents accidental exposure
-
----
-
-## 🧭 Roadmap
-
-* [x] Finish home audio wiring
-* [ ] Finish mobile audio wiring
-* [x] Add GPS module to mobile build
-* [ ] Capture aprs.fi screenshots
-* [ ] Add wiring diagrams
-* [x] Field testing and validation for home iGate
-* [ ] Add NOC dashboard integration
-
----
-
-## 🚀 Quick Start
-
-Install dependencies:
+**Install dependencies:**
 
 ```bash
-sudo apt update
-sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 sudo apt install direwolf gpsd gpsd-clients netcat-openbsd -y
 ```
 
-Test connectivity:
+**Test APRS-IS connectivity:**
 
 ```bash
 ping -c 3 google.com
@@ -308,7 +189,7 @@ getent hosts noam.aprs2.net
 nc -vz noam.aprs2.net 14580
 ```
 
-Enable service:
+**Enable Direwolf as a service:**
 
 ```bash
 sudo cp ./configs/home/direwolf.service /etc/systemd/system/direwolf.service
@@ -319,42 +200,36 @@ sudo systemctl start direwolf
 
 ---
 
-## 📚 What I Learned
+## Repository Structure
 
-* How to deploy and manage Linux services using systemd
-* Network prioritization and failover using nmcli
-* Integrating hardware (radio/audio/GPS) with software systems
-* Designing systems for reliability and uptime
-* Documenting technical builds for reproducibility
+```
+ceds-aprs-igate/
+├── configs/            # Direwolf configs for home and mobile nodes
+├── diagrams/           # System architecture diagrams
+├── docs/               # Setup documentation and notes
+├── notes/              # Field notes and tuning logs
+├── parts/              # Hardware parts list
+├── scripts/            # Setup and helper scripts
+└── screenshots/        # aprs.fi verification screenshots
+```
 
 ---
 
-## 🧪 Troubleshooting Notes
+## Troubleshooting
 
-### Audio Level Too High
+### Audio level too high
 
-Problem:
-
-```text
+```
 Audio input level is too high
 ```
 
-Fix:
+Add an inline volume controller between the radio and USB sound card. Tune Direwolf audio level to 50–60 using live beacon testing.
 
-* Added inline volume control
-* Tuned Direwolf audio levels to roughly **50–60**
-* Verified using repeated FT5D beacon tests
+### Audio device busy
 
-### Audio Device Busy
-
-Problem:
-
-```text
-Could not open audio device plughw:1,0
-Device or resource busy
 ```
-
-Fix:
+Could not open audio device plughw:1,0 — Device or resource busy
+```
 
 ```bash
 sudo systemctl stop direwolf
@@ -362,23 +237,57 @@ sudo killall direwolf
 fuser -v /dev/snd/*
 ```
 
-### APRS-IS Not Updating
+### APRS-IS not updating
 
-Problem:
-
-* Direwolf decoded packets
-* APRS.fi did not update consistently
-
-Fix:
-
-* Verified APRS-IS login
-* Corrected IGLOGIN to match iGate SSID:
+Verify `MYCALL` and `IGLOGIN` use the same SSID — mismatch causes silent auth failures:
 
 ```conf
 MYCALL KJ5JCO-10
 IGLOGIN KJ5JCO-10 <PASSCODE>
 ```
 
-### Missing Some Beacons
+### Missing beacons
 
-This is normal APRS behavior. Packet collisions, RF conditions, squelch behavior, and local APRS traffic levels can affect whether every beacon is decoded.
+Normal APRS behavior. Packet collisions, RF conditions, and local traffic levels all affect decode rate. Consistent decodes over time matter more than catching every single packet.
+
+---
+
+## Roadmap
+
+- [x] Home iGate audio chain tuned and verified
+- [x] Home iGate live on aprs.fi (KJ5JCO-10)
+- [x] GPS module added to mobile build
+- [x] Network failover configured (WiFi → hotspot)
+- [x] systemd service management on both nodes
+- [ ] Mobile audio wiring complete
+- [ ] Mobile iGate live on aprs.fi (KJ5JCO-15)
+- [ ] aprs.fi verification screenshots added
+- [ ] Wiring diagrams added to diagrams/
+- [ ] NOC dashboard integration (Grafana panel for APRS data)
+
+---
+
+## HomeLab Integration
+
+This iGate is part of **Ced's HomeLab** — a broader infrastructure stack built around real systems engineering.
+
+The APRS nodes act as RF edge ingestion points: physical radio signals decoded, digitized, and injected into an IP network. It's the same pattern used in industrial IoT — sensors at the edge feeding data into a central system — except the sensor is a radio and the edge device is a Raspberry Pi.
+
+| Project | Description |
+|---------|-------------|
+| [ceds-homelab](https://github.com/ced4568/ceds-homelab) | 6-node Proxmox cluster, TrueNAS, full infrastructure |
+| [ced-k3s-homelab](https://github.com/ced4568/ced-k3s-homelab) | 12-node K3s cluster on Raspberry Pi |
+| [ced-portfolio](https://github.com/ced4568/ced-portfolio) | Source for chasedumphord.com |
+
+---
+
+## Author
+
+**Chase Dumphord (Ced) — KJ5JCO**
+Digital Systems Engineer · GE Aerospace · Oxford, MS
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-chasedumphord.com-0F6E56?style=flat-square)](https://chasedumphord.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-chase--dumphord-0A66C2?style=flat-square)](https://www.linkedin.com/in/chase-dumphord/)
+[![GitHub](https://img.shields.io/badge/GitHub-ced4568-181717?style=flat-square)](https://github.com/ced4568)
+[![APRS](https://img.shields.io/badge/APRS-KJ5JCO-1D9E75?style=flat-square)](https://aprs.fi/#!call=KJ5JCO)
+[![Live NOC](https://img.shields.io/badge/NOC-noc.chasedumphord.com-085041?style=flat-square)](https://noc.chasedumphord.com)
